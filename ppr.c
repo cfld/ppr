@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     // IO
     
     FILE *fptr = NULL; 
-    fptr = fopen("jhu.bin", "rb");    
+    fptr = fopen("data/jhu.bin", "rb");    
     fread(&n_nodes, sizeof(Int), 1, fptr);
     fread(&n_edges, sizeof(Int), 1, fptr);
     
@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
     Int* indices = (Int*)malloc(n_edges * sizeof(Int));
     fread(indices, sizeof(Int), n_edges, fptr);
     
+    // !! Don't actually need this
     // Int* data = (Int*)malloc(n_edges * sizeof(Int));
     // fread(data, sizeof(Int), n_edges, fptr);
 
