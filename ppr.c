@@ -6,6 +6,10 @@
 #include <string.h>
 
 typedef int64_t Int;
+typedef double Real;
+double alpha   = 0.15;
+double epsilon = 1e-6;
+Int n_seeds    = 512;
 
 void ppr(double* p ,Int seed, double alpha, double epsilon, Int n_nodes, Int* indptr, Int* indices, Int* degrees) {
     double* r       = (double*)malloc(n_nodes * sizeof(double));
@@ -67,29 +71,22 @@ void ppr(double* p ,Int seed, double alpha, double epsilon, Int n_nodes, Int* in
 
 int main(int argc, char *argv[]) {
     
-    Int n_nodes;
-    Int n_edges;
-    
     // -- 
     // IO
     
     FILE *fptr = NULL; 
     fptr = fopen("data/jhu.bin", "rb");    
+    Int n_nodes;
     fread(&n_nodes, sizeof(Int), 1, fptr);
+    
+    Int n_edges;
     fread(&n_edges, sizeof(Int), 1, fptr);
-    
-    printf("n_nodes %ld \n", n_nodes);
-    printf("n_edges %ld \n", n_edges);
-    
+        
     Int* indptr = (Int*)malloc((n_nodes + 1) * sizeof(Int));
     fread(indptr, sizeof(Int), n_nodes + 1, fptr);
     
     Int* indices = (Int*)malloc(n_edges * sizeof(Int));
     fread(indices, sizeof(Int), n_edges, fptr);
-    
-    // !! Don't actually need this
-    // Int* data = (Int*)malloc(n_edges * sizeof(Int));
-    // fread(data, sizeof(Int), n_edges, fptr);
 
     Int* degrees = (Int*)malloc(n_nodes * sizeof(Int));
     for(Int i = 0; i < n_nodes; i++)
@@ -98,13 +95,9 @@ int main(int argc, char *argv[]) {
     // --
     // Run
     
-    double alpha   = 0.15;
-    double epsilon = 1e-6;
+    double* P = (double*)malloc(n_nodes * n_seeds * sizeof(double)); // Array to n_seeds * n_nodes dense output
     
-    Int n_seeds = 512;
-    double* P = (double*)malloc(n_nodes * n_seeds * sizeof(double));
-    
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for(Int seed = 0; seed < n_seeds; seed++) {
         ppr(
             &P[seed * n_nodes],
