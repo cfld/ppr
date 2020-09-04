@@ -32,6 +32,7 @@ void ppr(double* p ,Int seed, double alpha, double epsilon, Int n_nodes, Int* in
         if(frontier_size == 0) break;
         
         memcpy(r_prime, r, n_nodes * sizeof(Int));
+        
         for(Int i = 0; i < frontier_size; i++) {
             Int node_idx = frontier[i];
             p[node_idx] += (2 * alpha) / (1 + alpha) * r[node_idx];
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]) {
     Int n_seeds = 512;
     double* P = (double*)malloc(n_nodes * n_seeds * sizeof(double));
     
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(Int seed = 0; seed < n_seeds; seed++) {
         ppr(
             &P[seed * n_nodes],
