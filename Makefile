@@ -1,4 +1,4 @@
-FLAGS += -mtune=native -march=native -Wall -O3 -DNDEBUG -g
+CFLAGS += -mtune=native -march=native -Wall -O3 -DNDEBUG -g -fopenmp
 LIBS += -lrt
 
 all: ppr
