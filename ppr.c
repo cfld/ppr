@@ -39,7 +39,7 @@ void ppr(Real* p ,Int seed, Real alpha, Real epsilon, Int n_nodes, Int* indptr, 
             Int deg     = degrees[src_idx];
             Int offset  = indptr[src_idx];
             for(Int j = 0; j < deg; j++) {
-                Int dst_idx   = indices[offset + j];
+                Int dst_idx = indices[offset + j];
                 Real update = ((1 - alpha) / (1 + alpha)) * r[src_idx] / deg;
                 r_prime[dst_idx] += update;
             }
