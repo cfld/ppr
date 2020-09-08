@@ -7,34 +7,25 @@
 
 typedef int64_t Int;
 typedef double Real;
-double alpha   = 0.15;
-double epsilon = 1e-6;
+Real alpha   = 0.15;
+Real epsilon = 1e-6;
 Int n_seeds    = 512;
 
-void ppr(double* p ,Int seed, double alpha, double epsilon, Int n_nodes, Int* indptr, Int* indices, Int* degrees) {
-    double* r       = (double*)malloc(n_nodes * sizeof(double));
-    double* r_prime = (double*)malloc(n_nodes * sizeof(double));
-    for(Int i = 0; i < n_nodes; i++) {
-        p[i]       = 0;
-        r[i]       = 0;
-        r_prime[i] = 0;
-    }
-    
+void ppr(Real* p ,Int seed, Real alpha, Real epsilon, Int n_nodes, Int* indptr, Int* indices, Int* degrees) {
+    Real* r = (Real*)malloc(n_nodes * sizeof(Real));
+    for(Int i = 0; i < n_nodes; i++) r[i] = 0;
     r[seed] = 1;
+    
+    Real* r_prime = (Real*)malloc(n_nodes * sizeof(Real));
     
     // --
     // Run
     
     Int* frontier = (Int*)malloc(n_nodes * sizeof(Int));
-    for(Int i = 0; i < n_nodes; i++) 
-        frontier[i] = -1;
-    
-    frontier[0] = seed;
+    frontier[0]   = seed;
     Int frontier_size = 1;
     
-    while(1) {
-        if(frontier_size == 0) break;
-        
+    while(frontier_size > 0) {
         memcpy(r_prime, r, n_nodes * sizeof(Int));
         
         for(Int i = 0; i < frontier_size; i++) {
@@ -49,7 +40,7 @@ void ppr(double* p ,Int seed, double alpha, double epsilon, Int n_nodes, Int* in
             Int offset  = indptr[src_idx];
             for(Int j = 0; j < deg; j++) {
                 Int dst_idx   = indices[offset + j];
-                double update = ((1 - alpha) / (1 + alpha)) * r[src_idx] / deg;
+                Real update = ((1 - alpha) / (1 + alpha)) * r[src_idx] / deg;
                 r_prime[dst_idx] += update;
             }
         }
@@ -95,7 +86,7 @@ int main(int argc, char *argv[]) {
     // --
     // Run
     
-    double* P = (double*)malloc(n_nodes * n_seeds * sizeof(double)); // Array to n_seeds * n_nodes dense output
+    Real* P = (Real*)malloc(n_nodes * n_seeds * sizeof(Real)); // Array to n_seeds * n_nodes dense output
     
     #pragma omp parallel for
     for(Int seed = 0; seed < n_seeds; seed++) {
@@ -111,8 +102,11 @@ int main(int argc, char *argv[]) {
         );
     }
 
+    // --
+    // Validate
+    
     for(Int seed = 0; seed < n_seeds; seed++) {
-        double pp = 0;
+        Real pp = 0;
         for(Int i = 0; i < n_nodes; i++) {
             pp += P[seed * n_nodes + i];
         }
